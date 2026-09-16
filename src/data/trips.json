@@ -1,0 +1,101 @@
+[
+  {
+    "id": "jaipur",
+    "name": "Jaipur Trip",
+    "slug": "jaipur",
+    "description": "The Pink City, royal palaces, and vibrant heritage.",
+    "trip_date": "March 2026",
+    "password": "",
+    "has_password": false,
+    "guest_enabled": true,
+    "cover_image": "https://images.unsplash.com/photo-1477587458883-47145ed94245?q=80&w=1200&auto=format&fit=crop",
+    "photos": [
+      {
+        "id": "jaipur-1",
+        "title": "Hawa Mahal Dawn",
+        "location": "Jaipur, Rajasthan",
+        "date_taken": "March 2026",
+        "caption": "Intricate sandstone lattices catching the earliest morning rays.",
+        "url": "https://images.unsplash.com/photo-1477587458883-47145ed94245?q=80&w=1200&auto=format&fit=crop",
+        "is_guest": false,
+        "is_featured": true
+      },
+      {
+        "id": "jaipur-2",
+        "title": "Amer Palace Courtyard",
+        "location": "Amer, Jaipur",
+        "date_taken": "March 2026",
+        "caption": "Historic sandstone arches and reflecting pools.",
+        "url": "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=1200&auto=format&fit=crop",
+        "is_guest": false,
+        "is_featured": true
+      },
+      {
+        "id": "jaipur-3",
+        "title": "Jal Mahal Reflections",
+        "location": "Man Sagar Lake",
+        "date_taken": "March 2026",
+        "caption": "Serene water palace standing gracefully in the evening light.",
+        "url": "https://images.unsplash.com/photo-1599661046289-e31897846e41?q=80&w=1200&auto=format&fit=crop",
+        "is_guest": false,
+        "is_featured": false
+      }
+    ]
+  },
+  {
+    "id": "manali",
+    "name": "Manali Trip",
+    "slug": "manali",
+    "description": "Snow-capped peaks, pine forests, and mountain trails.",
+    "trip_date": "January 2026",
+    "password": "pass",
+    "has_password": true,
+    "guest_enabled": false,
+    "cover_image": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop",
+    "photos": [
+      {
+        "id": "manali-1",
+        "title": "Solang Mist & Pines",
+        "location": "Solang Valley, Manali",
+        "date_taken": "January 2026",
+        "caption": "Snowcapped peaks emerging above the alpine pine forests.",
+        "url": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop",
+        "is_guest": false,
+        "is_featured": true
+      },
+      {
+        "id": "manali-2",
+        "title": "Rohtang Morning Frost",
+        "location": "Rohtang Pass",
+        "date_taken": "January 2026",
+        "caption": "Crystalline snow and deep blue Himalayan sky.",
+        "url": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+        "is_guest": false,
+        "is_featured": false
+      }
+    ]
+  },
+  {
+    "id": "goa",
+    "name": "Goa Trip",
+    "slug": "goa",
+    "description": "Golden shores, swaying palms, and coastal sunset reflections.",
+    "trip_date": "November 2025",
+    "password": "",
+    "has_password": false,
+    "guest_enabled": true,
+    "cover_image": "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=1200&auto=format&fit=crop",
+    "photos": [
+      {
+        "id": "goa-1",
+        "title": "Golden Sunset Shore",
+        "location": "Anjuna, Goa",
+        "date_taken": "November 2025",
+        "caption": "Gentle Arabian Sea waves reflecting amber dusk.",
+        "url": "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=1200&auto=format&fit=crop",
+        "is_guest": false,
+        "is_featured": true
+      }
+    ]
+  }
+]

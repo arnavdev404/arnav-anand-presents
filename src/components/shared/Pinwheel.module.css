@@ -1,0 +1,220 @@
+/* ================================================================
+   PINWHEEL / WINDMILL LOADER
+   Two variants:
+     .cardLoader   — small, inline, inside journey card image area
+     .pageLoader   — large fullscreen with stick + green bushes
+   ================================================================ */
+
+/* ── PAGE VERSION ─────────────────────────────────────────────── */
+
+.pageLoader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Windmill assembly — positions everything relative to each other */
+.windmill {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* total visual height: wheel + stick + overlapping bushes */
+}
+
+/* The spinning wheel head */
+.container {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  transform: rotate(30deg) scale(1);
+  animation: pinwheelSpin 2.5s infinite linear;
+  z-index: 2;
+  /* scale up to look large on screen */
+  scale: 5.5;
+  margin-bottom: 48px; /* gap to top of stick */
+}
+
+/* Brown pole */
+.stick {
+  width: 10px;
+  height: 150px;
+  background: linear-gradient(to bottom, #8B4513, #a3541c, #7a3b0e);
+  border-radius: 3px 3px 2px 2px;
+  z-index: 1;
+  margin-top: -2px;
+}
+
+/* Green bushes at the base */
+.bushes {
+  position: relative;
+  width: 300px;
+  height: 60px;
+  margin-top: -8px;
+  z-index: 0;
+}
+
+/* Main bush cluster */
+.bushes::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4a7c3f;
+  width: 110px;
+  height: 58px;
+  border-radius: 60px 60px 0 0;
+  box-shadow:
+    -105px 8px 0 0 #3d6b34,   /* left large */
+     105px 8px 0 0 #4a7c3f,   /* right large */
+    -180px 22px 0 -6px #3a6330, /* far left */
+     180px 22px 0 -6px #557a3a; /* far right small */
+}
+
+/* Smaller front bushes / foreground variation */
+.bushes::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  /* small bush left of center */
+  background-color: #5a8f4e;
+  width: 65px;
+  height: 36px;
+  border-radius: 50px 50px 0 0;
+  box-shadow:
+    -78px 4px 0 -2px #3d6b34,
+     76px 6px 0 -2px #4a7c3f,
+    -150px 16px 0 -8px #3a6330,
+     148px 18px 0 -8px #6a9a55;
+}
+
+/* Dark mode bushes — slightly desaturated greens */
+[data-theme="dark"] .bushes::before {
+  background-color: #3d6b34;
+  box-shadow:
+    -105px 8px 0 0 #2e5228,
+     105px 8px 0 0 #3d6b34,
+    -180px 22px 0 -6px #2a4a25,
+     180px 22px 0 -6px #3d6b34;
+}
+[data-theme="dark"] .bushes::after {
+  background-color: #4a7c3f;
+  box-shadow:
+    -78px 4px 0 -2px #2e5228,
+     76px 6px 0 -2px #3d6b34,
+    -150px 16px 0 -8px #2a4a25,
+     148px 18px 0 -8px #557a3a;
+}
+
+/* ── SHARED PETAL PARTS ─────────────────────────────────────────── */
+
+.pin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  z-index: 10;
+  border-radius: 999px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.3);
+}
+
+.paperContainer {
+  position: absolute;
+  scale: 1.5;
+}
+
+.paperLeaf1 {
+  position: relative;
+  width: 0;
+  height: 0;
+  clip-path: ellipse(50% 50% at 50% 109%);
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-top-left-radius: 222px;
+  border-top-right-radius: 222px;
+}
+
+.paperLeaf2 {
+  position: absolute;
+  right: -1px;
+  bottom: 0;
+  width: 30px;
+  height: 20.5px;
+  border-bottom-right-radius: 2px;
+  z-index: 2;
+}
+
+.paperLeaf2::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 24.5px;
+  height: 20.5px;
+  clip-path: ellipse(100% 100% at 0% 100%);
+  border-top-right-radius: 999px;
+  box-shadow:
+    inset -5px 0px 3px -3px rgba(0, 0, 0, 0.2),
+    10px -10px 10px 0px rgba(255, 255, 255, 0.1);
+  z-index: 1;
+}
+
+/* ── PETALS ─────────────────────────────────────────────────────── */
+
+.red { top: 50%; left: 50%; transform: translate(-80%, -85%); z-index: 2; }
+.red1  { border-bottom: 50px solid #e8360f; }
+.red2  { background-color: #e8360f; }
+.red2::before  { background-color: #c42d0c; }
+
+.rotate90 { transform: rotate(90deg) translate(-75%, -10%); top: 50%; left: 50%; z-index: 3; }
+.yellow1 { border-bottom: 50px solid #f5c400; }
+.yellow2 { background-color: #f5c400; }
+.yellow2::before { background-color: #d4a800; }
+
+.rotate180 { transform: rotate(180deg) translate(-16%, -17%); top: 50%; left: 50%; z-index: 4; }
+.green1 { border-bottom: 50px solid #1fa84e; }
+.green2 { background-color: #1fa84e; }
+.green2::before { background-color: #197d3b; }
+
+.rotate270 { transform: rotate(270deg) translate(-22%, -90%); top: 50%; left: 50%; z-index: 5; }
+.blue1 { border-bottom: 50px solid #1a73e8; }
+.blue2 { background-color: #1a73e8; }
+.blue2::before { background-color: #1558c0; }
+
+/* ── CARD VERSION ─────────────────────────────────────────────── */
+
+.cardLoader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-accent);
+  z-index: 2;
+}
+
+.cardContainer {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  transform: rotate(30deg) scale(0.77);
+  animation: pinwheelSpin 2.5s infinite linear;
+  scale: 3.5;
+}
+
+/* ── ANIMATION ─────────────────────────────────────────────────── */
+
+@keyframes pinwheelSpin {
+  from { transform: rotate(30deg) scale(var(--pw-scale, 1)); }
+  to   { transform: rotate(390deg) scale(var(--pw-scale, 1)); }
+}
+
+.container     { --pw-scale: 1; }
+.cardContainer { --pw-scale: 0.77; }

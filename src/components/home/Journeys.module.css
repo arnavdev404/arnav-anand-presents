@@ -1,0 +1,571 @@
+.section {
+  padding: var(--section-padding) 0;
+  background: var(--bg-secondary);
+  transition: background-color var(--transition-base);
+}
+
+.header {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+}
+
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 300;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.addJourneyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border: 1px solid var(--text-primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.addJourneyBtn:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.plusIcon {
+  font-size: 1.125rem;
+  line-height: 1;
+  font-weight: bold;
+}
+
+.grid {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.6s ease, transform 0.6s ease, box-shadow var(--transition-base);
+  display: flex;
+  flex-direction: column;
+}
+
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
+}
+
+.imgArea {
+  position: relative;
+  height: 260px;
+  overflow: hidden;
+  background: var(--bg-accent);
+}
+
+.coverImg {
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease;
+}
+
+.coverImgLoading {
+  opacity: 0;
+}
+
+.coverImgLoaded {
+  opacity: 1;
+}
+
+.card:hover .coverImg {
+  transform: scale(1.06);
+}
+
+.coverPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--warm-beige), var(--bg-accent));
+  font-family: var(--font-display);
+  font-size: 5rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.imgOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%);
+}
+
+.badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-full);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.badgeProtected {
+  background: rgba(0,0,0,0.65);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.badgeOpen {
+  background: rgba(16, 185, 129, 0.25);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.cardBody {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.tripDate {
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.375rem;
+}
+
+.tripName {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.tripDesc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+  margin-top: auto;
+}
+
+.metaItem, .metaGuest {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.metaGuest {
+  color: var(--accent-primary);
+}
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.viewBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.viewBtn:hover {
+  color: var(--accent-primary);
+  gap: 0.75rem;
+}
+
+.cardQuickBtns {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.quickActionBtn {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.quickActionBtn:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--border-accent);
+}
+
+.empty {
+  text-align: center;
+  padding: 4rem var(--container-padding);
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.125rem;
+}
+
+/* Modal styles */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.modalContent {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 520px;
+  padding: 2rem;
+  box-shadow: var(--shadow-xl);
+  animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.modalTitle {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  color: var(--text-primary);
+}
+
+.modalCloseBtn {
+  background: none;
+  border: none;
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.modalCloseBtn:hover {
+  color: var(--text-primary);
+}
+
+.formError {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  margin-bottom: 1rem;
+}
+
+.createForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.formLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.65rem 0.875rem;
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: border-color var(--transition-fast);
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.fileInput {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  padding: 0.375rem 0;
+}
+
+.formHint {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+@media (max-width: 640px) {
+  .header { flex-direction: column; align-items: flex-start; }
+  .grid { grid-template-columns: 1fr; }
+  .card:hover { transform: none; }
+  .formRow { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   PINWHEEL / WINDMILL LOADING ANIMATION
+   Shown inside each journey card while the cover image loads
+   ============================================================ */
+
+.pinwheelWrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-accent);
+  z-index: 2;
+}
+
+.pinwheelLoader {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.pinStick {
+  width: 5px;
+  height: 90px;
+  background-color: #a3541c;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  z-index: -1;
+  border-radius: 2px;
+}
+
+.pinContainer {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  transform: rotate(30deg) scale(0.77);
+  animation: pinwheelSpin 2.5s infinite linear;
+}
+
+.pinDot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  z-index: 10;
+  border-radius: 999px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+}
+
+.paperContainer {
+  position: absolute;
+  scale: 1.5;
+}
+
+.paperLeaf1 {
+  position: relative;
+  width: 0;
+  height: 0;
+  clip-path: ellipse(50% 50% at 50% 109%);
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-top-left-radius: 222px;
+  border-top-right-radius: 222px;
+}
+
+.paperLeaf2 {
+  position: absolute;
+  right: -1px;
+  bottom: 0;
+  width: 30px;
+  height: 20.5px;
+  border-bottom-right-radius: 2px;
+  z-index: 2;
+}
+
+.paperLeaf2::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 24.5px;
+  height: 20.5px;
+  clip-path: ellipse(100% 100% at 0% 100%);
+  border-top-right-radius: 999px;
+  box-shadow:
+    inset -5px 0px 3px -3px rgba(0, 0, 0, 0.2),
+    10px -10px 10px 0px rgba(255, 255, 255, 0.1);
+  z-index: 1;
+}
+
+/* Red petal */
+.pinRed {
+  top: 50%;
+  left: 50%;
+  transform: translate(-80%, -85%);
+  z-index: 2;
+}
+.redLeaf1 { border-bottom: 50px solid #ff5733; }
+.redLeaf2 { background-color: #ff5733; }
+.redLeaf2::before { background-color: #e04020; }
+
+/* Yellow petal */
+.pinRotate90 {
+  transform: rotate(90deg) translate(-75%, -10%);
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+}
+.yellowLeaf1 { border-bottom: 50px solid #ffc300; }
+.yellowLeaf2 { background-color: #ffc300; }
+.yellowLeaf2::before { background-color: #e0a800; }
+
+/* Green petal */
+.pinRotate180 {
+  transform: rotate(180deg) translate(-16%, -17%);
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+}
+.greenLeaf1 { border-bottom: 50px solid #2ecc71; }
+.greenLeaf2 { background-color: #2ecc71; }
+.greenLeaf2::before { background-color: #27ae60; }
+
+/* Blue petal */
+.pinRotate270 {
+  transform: rotate(270deg) translate(-22%, -90%);
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+}
+.blueLeaf1 { border-bottom: 50px solid #3498db; }
+.blueLeaf2 { background-color: #3498db; }
+.blueLeaf2::before { background-color: #2980b9; }
+
+@keyframes pinwheelSpin {
+  from { transform: rotate(30deg) scale(0.77); }
+  to   { transform: rotate(390deg) scale(0.77); }
+}
+

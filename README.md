@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ARNAV ANAND PRESENTS
 
-## Getting Started
+A luxury, private travel photography platform built with Next.js 14, TypeScript, Supabase, and Swiper.js.
 
-First, run the development server:
+---
+
+## Features
+
+- **Per-Trip Password Protection**: Real server-side authorization (bcrypt + HTTP-only session cookies).
+- **Exact 5-Second Loading Experience**: Elegant "ACCESS GRANTED" cinematic transition with prefetching.
+- **Dual Gallery View**:
+  - **Horizontal Slider**: Desktop arrow keys, smooth mouse drag, touch gestures, and photo counter.
+  - **Vertical Scroll Album**: Varied editorial aspect ratios, lazy loading with `IntersectionObserver`, and individual download buttons.
+- **Fullscreen Lightbox**: Keyboard navigation, caption overlay, and direct download.
+- **HEIC Original Preservation**: Original iPhone/camera HEIC files are stored untouched and served on download, while Sharp automatically generates optimized WebP/JPEG previews for high-speed browsing.
+- **Guest Memories**: Separate guest collections with optional dedicated passwords.
+- **Admin Dashboard**:
+  - Full trip management: create, edit, delete.
+  - **Prominent `+ ADD PHOTOS` Button**: Upload more photos directly to existing trips at any time.
+  - Photo classification: Move between Private and Guest, mark Featured or Cover.
+  - Single-click **"COPY TRIP LINK"**.
+- **Exact Color System**:
+  - **Light Mode**: Warm palette (`#FFE7E3`, `#FBDCD7`, `#FFDBD8`, `#F6E2C2`, `#E9D2B1`, `#F3BFBF`).
+  - **Dark Mode**: Cinematic palette (`#000000`, `#1F150C`, `#412D15`, `#E1DCC9`).
+  - Persistent theme toggle with zero-flicker `<head>` hydration script.
+
+---
+
+## Setup Guide
+
+### 1. Supabase Database & Storage Setup
+
+1. Create a free project at [supabase.com](https://supabase.com).
+2. Go to **SQL Editor** and execute the entire script in:
+   ```
+   supabase/schema.sql
+   ```
+3. In **Storage**, create two **Private** buckets:
+   - `trip-originals`
+   - `trip-previews`
+4. In **Authentication** -> **Users**, add your admin email and password.
+
+### 2. Configure Environment Variables
+
+Create `.env.local` based on `.env.example`:
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://your-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+### 3. Run Locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+Open [http://localhost:3000](http://localhost:3000).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Public Home: `http://localhost:3000/`
+- Journeys: `http://localhost:3000/journeys`
+- Admin Login: `http://localhost:3000/admin`

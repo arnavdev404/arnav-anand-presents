@@ -52,7 +52,7 @@
   --accent-hover: #a85a44;
   --accent-light: #F3BFBF;
 
-  --gallery-bg: #1a0e0a;
+  --gallery-bg: #FFE7E3;
 
   /* Typography */
   --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
@@ -141,6 +141,22 @@ body {
   transition: var(--transition-theme);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Allow text selection & typing caret ONLY when typing is needed */
+input,
+textarea,
+[contenteditable="true"] {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  cursor: text !important;
 }
 
 /* ---------- TYPOGRAPHY ---------- */
@@ -419,4 +435,17 @@ input, textarea, select {
 }
 @media (min-width: 769px) {
   .hide-desktop { display: none !important; }
+}
+
+/* Hide Next.js dev overlay indicators & tool buttons */
+nextjs-portal,
+[data-nextjs-dev-overlay],
+[data-nextjs-portal],
+[data-nextjs-toast],
+div[data-nextjs-indicator],
+#__next-build-watcher {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }

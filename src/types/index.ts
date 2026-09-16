@@ -16,6 +16,7 @@ export interface Trip {
   guest_access_type: GuestAccessType;
   created_at: string;
   updated_at: string;
+  has_password?: boolean;
   // computed
   private_photo_count?: number;
   guest_photo_count?: number;
@@ -79,7 +80,7 @@ export interface CreateTripPayload {
   slug: string;
   description?: string;
   trip_date?: string;
-  password: string;
+  password?: string;
   guest_enabled?: boolean;
   guest_access_type?: GuestAccessType;
   guest_password?: string;
