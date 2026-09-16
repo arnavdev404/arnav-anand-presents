@@ -1,12 +1,11 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { verifyAdminSessionToken, ADMIN_COOKIE_NAME } from '@/lib/auth';
+import { verifyAdminSessionToken, ADMIN_COOKIE_NAME, isAuthorizedAdmin } from '@/lib/auth';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
   let isAuthenticatedAdmin = false;
-  const configuredAdminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
 
   // 1. Try Supabase Auth user via SSR
   try {
@@ -33,7 +32,7 @@ export async function updateSession(request: NextRequest) {
 
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        if (!configuredAdminEmail || user.email?.toLowerCase() === configuredAdminEmail) {
+        if (isAuthorizedAdmin(user.email, user.app_metadata, user.user_metadata)) {
           isAuthenticatedAdmin = true;
         }
       }
@@ -48,7 +47,7 @@ export async function updateSession(request: NextRequest) {
     if (adminToken) {
       const verification = await verifyAdminSessionToken(adminToken);
       if (verification.valid) {
-        if (!configuredAdminEmail || verification.email?.toLowerCase() === configuredAdminEmail) {
+        if (isAuthorizedAdmin(verification.email)) {
           isAuthenticatedAdmin = true;
         }
       }

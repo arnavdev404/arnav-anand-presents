@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
-import { ADMIN_COOKIE_NAME, generateAdminSessionToken } from '@/lib/auth';
+import { ADMIN_COOKIE_NAME, generateAdminSessionToken, isAuthorizedAdmin } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +12,6 @@ export async function POST(request: NextRequest) {
 
     const trimmedEmail = String(email).trim().toLowerCase();
     const cleanPassword = String(password);
-    const configuredAdminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
     const configuredAdminPassword = process.env.ADMIN_PASSWORD;
 
     let authenticated = false;
@@ -27,8 +26,8 @@ export async function POST(request: NextRequest) {
       });
 
       if (!error && data?.user) {
-        // Enforce ADMIN_EMAIL restriction if configured
-        if (configuredAdminEmail && data.user.email?.toLowerCase() !== configuredAdminEmail) {
+        // Enforce admin authorization check
+        if (!isAuthorizedAdmin(data.user.email, data.user.app_metadata, data.user.user_metadata)) {
           await supabase.auth.signOut();
           return NextResponse.json(
             { error: 'Forbidden: You do not have administrator permissions.' },
@@ -44,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     // 2. Fallback: Check ADMIN_PASSWORD environment variable
     if (!authenticated && configuredAdminPassword && cleanPassword === configuredAdminPassword) {
-      if (configuredAdminEmail && trimmedEmail !== configuredAdminEmail) {
+      if (!isAuthorizedAdmin(trimmedEmail)) {
         return NextResponse.json(
           { error: 'Forbidden: Admin access restricted.' },
           { status: 403 }

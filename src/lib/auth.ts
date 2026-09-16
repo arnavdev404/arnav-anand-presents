@@ -77,6 +77,64 @@ export async function verifyAdminSessionToken(token: string): Promise<{ valid: b
   }
 }
 
+/**
+ * Helper to parse configured admin emails safely from process.env.ADMIN_EMAIL.
+ * Handles comma/semicolon-separated lists, trims whitespace, and strips quotes.
+ */
+export function getConfiguredAdminEmails(): string[] {
+  const raw = process.env.ADMIN_EMAIL;
+  if (!raw) return [];
+
+  return raw
+    .split(/[,;]/)
+    .map(e => e.trim().replace(/^["']|["']$/g, '').trim().toLowerCase())
+    .filter(e => e.length > 0);
+}
+
+/**
+ * Validates whether a given user is an authorized administrator.
+ * Checks:
+ * 1. Supabase Auth user metadata or app metadata (role === 'admin' or is_admin === true).
+ * 2. Matches against ADMIN_EMAIL environment variable (clean, stripped of quotes, multi-email support).
+ * 3. If ADMIN_EMAIL is not set or set to a placeholder (e.g. example.com), any authenticated Supabase user is allowed.
+ */
+export function isAuthorizedAdmin(
+  userEmail?: string | null,
+  appMetadata?: Record<string, any> | null,
+  userMetadata?: Record<string, any> | null
+): boolean {
+  // 1. Check if user has explicit admin role in Supabase metadata
+  if (
+    appMetadata?.role === 'admin' ||
+    appMetadata?.is_admin === true ||
+    userMetadata?.role === 'admin' ||
+    userMetadata?.is_admin === true
+  ) {
+    return true;
+  }
+
+  const allowedEmails = getConfiguredAdminEmails();
+
+  // If no ADMIN_EMAIL is configured, any valid authenticated Supabase user is an admin
+  if (allowedEmails.length === 0) {
+    return true;
+  }
+
+  // Filter out any placeholder documentation emails
+  const realEmails = allowedEmails.filter(
+    e => !e.includes('example.com') && !e.includes('your-email') && !e.includes('your-project')
+  );
+
+  // If only placeholder emails were configured in Vercel, allow any authenticated Supabase user
+  if (realEmails.length === 0) {
+    return true;
+  }
+
+  if (!userEmail) return false;
+  const normalized = userEmail.trim().toLowerCase();
+  return realEmails.includes(normalized);
+}
+
 export interface AdminAuthResult {
   isAdmin: boolean;
   user?: User | { email?: string; id?: string };
@@ -89,15 +147,13 @@ export interface AdminAuthResult {
  * Evaluates Supabase Auth session first, then signed admin token cookie.
  */
 export async function verifyAdmin(): Promise<AdminAuthResult> {
-  const configuredAdminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-
   // 1. Check Supabase Auth session via cookies
   try {
     const supabase = await createClient();
     const { data: { user }, error } = await supabase.auth.getUser();
 
     if (user && !error) {
-      if (configuredAdminEmail && user.email?.toLowerCase() !== configuredAdminEmail) {
+      if (!isAuthorizedAdmin(user.email, user.app_metadata, user.user_metadata)) {
         return {
           isAdmin: false,
           user,
@@ -123,7 +179,7 @@ export async function verifyAdmin(): Promise<AdminAuthResult> {
     if (adminToken) {
       const verification = await verifyAdminSessionToken(adminToken);
       if (verification.valid) {
-        if (configuredAdminEmail && verification.email?.toLowerCase() !== configuredAdminEmail) {
+        if (!isAuthorizedAdmin(verification.email)) {
           return {
             isAdmin: false,
             error: 'Forbidden: Admin access restricted.',
