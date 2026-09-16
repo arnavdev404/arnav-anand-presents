@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { verifyAdmin } from '@/lib/auth';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import styles from './AdminLayout.module.css';
 import type { Metadata } from 'next';
@@ -10,10 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const auth = await verifyAdmin();
 
-  if (!user) redirect('/admin');
+  if (!auth.isAdmin) redirect('/admin');
 
   return (
     <div className={styles.adminShell}>
