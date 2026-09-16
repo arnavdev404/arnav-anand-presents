@@ -23,6 +23,11 @@ export function TripForm() {
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
 
+  // Password visibility toggles
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showGuestPassword, setShowGuestPassword] = useState(false);
+
   // Auto-generate slug from name
   const handleNameChange = (val: string) => {
     setName(val);
@@ -41,8 +46,8 @@ export function TripForm() {
       return;
     }
 
-    if (password.length < 6) {
-      setError('Private password must be at least 6 characters.');
+    if (password.length < 4) {
+      setError('Private password must be at least 4 characters.');
       return;
     }
 
@@ -83,6 +88,22 @@ export function TripForm() {
     }
   };
 
+  const eyeBtn: React.CSSProperties = {
+    position: 'absolute',
+    right: '0.65rem',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: 'var(--text-muted)',
+    fontSize: '1rem',
+    lineHeight: 1,
+    padding: '0.2rem',
+    display: 'flex',
+    alignItems: 'center',
+  };
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Create New Trip</h1>
@@ -115,6 +136,12 @@ export function TripForm() {
               value={slug}
               onChange={e => setSlug(e.target.value.toLowerCase())}
             />
+            <p className={styles.hint}>
+              Controls the web address. e.g. <em>jaipur</em> creates:<br />
+              <code style={{ fontSize: '0.7rem', wordBreak: 'break-all' }}>
+                https://arnav-anand-presents.vercel.app/trip/jaipur
+              </code>
+            </p>
           </div>
         </div>
 
@@ -153,31 +180,56 @@ export function TripForm() {
         </div>
 
         <div className={styles.divider} />
-        <h2 className={styles.sectionTitle}>Security & Passwords</h2>
+        <h2 className={styles.sectionTitle}>Security &amp; Passwords</h2>
 
         <div className={styles.row}>
           <div className={styles.field}>
             <label className={styles.label}>Private Password *</label>
-            <input
-              type="password"
-              required
-              className={styles.input}
-              placeholder="••••••••••••"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                className={styles.input}
+                placeholder="Min. 4 characters"
+                value={password}
+                style={{ paddingRight: '2.2rem' }}
+                onChange={e => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                title={showPassword ? 'Hide password' : 'Show password'}
+                style={eyeBtn}
+                onClick={() => setShowPassword(v => !v)}
+                tabIndex={-1}
+              >
+                {showPassword ? '🙈' : '👁'}
+              </button>
+            </div>
+            <p className={styles.hint}>Minimum 4 characters.</p>
           </div>
 
           <div className={styles.field}>
             <label className={styles.label}>Confirm Private Password *</label>
-            <input
-              type="password"
-              required
-              className={styles.input}
-              placeholder="••••••••••••"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                required
+                className={styles.input}
+                placeholder="Repeat password"
+                value={confirmPassword}
+                style={{ paddingRight: '2.2rem' }}
+                onChange={e => setConfirmPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                title={showConfirmPassword ? 'Hide password' : 'Show password'}
+                style={eyeBtn}
+                onClick={() => setShowConfirmPassword(v => !v)}
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? '🙈' : '👁'}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -223,14 +275,26 @@ export function TripForm() {
             {guestAccessType === 'password_protected' && (
               <div className={styles.field} style={{ marginTop: '1rem' }}>
                 <label className={styles.label}>Guest Password *</label>
-                <input
-                  type="password"
-                  required
-                  className={styles.input}
-                  placeholder="Enter separate guest password"
-                  value={guestPassword}
-                  onChange={e => setGuestPassword(e.target.value)}
-                />
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showGuestPassword ? 'text' : 'password'}
+                    required
+                    className={styles.input}
+                    placeholder="Enter separate guest password"
+                    value={guestPassword}
+                    style={{ paddingRight: '2.2rem' }}
+                    onChange={e => setGuestPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    title={showGuestPassword ? 'Hide password' : 'Show password'}
+                    style={eyeBtn}
+                    onClick={() => setShowGuestPassword(v => !v)}
+                    tabIndex={-1}
+                  >
+                    {showGuestPassword ? '🙈' : '👁'}
+                  </button>
+                </div>
               </div>
             )}
           </div>

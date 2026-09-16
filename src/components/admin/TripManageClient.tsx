@@ -27,6 +27,7 @@ export function TripManageClient({ trip: initialTrip }: TripManageClientProps) {
   const [editDesc, setEditDesc] = useState(initialTrip.description || '');
   const [editDate, setEditDate] = useState(initialTrip.trip_date || '');
   const [editPassword, setEditPassword] = useState('');
+  const [showEditPassword, setShowEditPassword] = useState(false);
   const [editGuestEnabled, setEditGuestEnabled] = useState(initialTrip.guest_enabled);
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState('');
@@ -59,6 +60,7 @@ export function TripManageClient({ trip: initialTrip }: TripManageClientProps) {
 
   const privatePhotos = photos.filter(p => !p.is_guest);
   const guestPhotos = photos.filter(p => p.is_guest);
+  const glimpsePhotos = photos.filter(p => p.is_featured);
 
   const handleAction = async (photoId: string, action: string, value?: unknown) => {
     try {
@@ -184,6 +186,41 @@ export function TripManageClient({ trip: initialTrip }: TripManageClientProps) {
     }
   };
 
+  const eyeBtn: React.CSSProperties = {
+    position: 'absolute',
+    right: '0.65rem',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: 'var(--text-muted)',
+    fontSize: '1rem',
+    lineHeight: 1,
+    padding: '0.2rem',
+    display: 'flex',
+    alignItems: 'center',
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '0.65rem 0.85rem',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
+    borderRadius: '4px',
+    color: 'var(--text-primary)',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontSize: '0.75rem',
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    color: 'var(--text-secondary)',
+    marginBottom: '0.35rem',
+  };
+
   return (
     <div className={styles.container}>
       {/* Breadcrumb / Back */}
@@ -202,7 +239,7 @@ export function TripManageClient({ trip: initialTrip }: TripManageClientProps) {
             {trip.has_password && ' • 🔒 Password Protected'}
           </p>
           <p className={styles.stats}>
-            <strong>{photos.length} Total Photos</strong> ({privatePhotos.length} Private • {guestPhotos.length} Guest)
+            <strong>{photos.length} Total Photos</strong> ({privatePhotos.length} Private • {guestPhotos.length} Guest • {glimpsePhotos.length} Glimpses)
           </p>
         </div>
 
@@ -256,13 +293,62 @@ export function TripManageClient({ trip: initialTrip }: TripManageClientProps) {
           </div>
         ) : (
           <>
+            {/* Glimpses / Highlights Section */}
+            <div className={styles.albumSection}>
+              <h2 className={styles.albumTitle} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                ★ GLIMPSES / HIGHLIGHTS — {glimpsePhotos.length}
+              </h2>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                Featured photos shown in the Glimpses carousel on the Journeys page. Use the ★ Feature button on any photo below to add it here.
+              </p>
+              {glimpsePhotos.length === 0 ? (
+                <p className={styles.emptyText}>
+                  No featured photos yet. Click <strong>Feature</strong> on any photo below to add it to Glimpses.
+                </p>
+              ) : (
+                <div className={styles.photoGrid}>
+                  {glimpsePhotos.map(photo => (
+                    <div key={photo.id} className={styles.photoCard}>
+                      <div className={styles.imgWrapper}>
+                        <Image
+                          src={photo.preview_url}
+                          alt={photo.title || 'Glimpse'}
+                          fill
+                          sizes="200px"
+                          className={styles.img}
+                        />
+                        <span className={styles.featuredBadge}>★ FEATURED</span>
+                      </div>
+                      <div className={styles.cardControls}>
+                        <button
+                          className={styles.cardBtn}
+                          onClick={() => handleAction(photo.id, 'toggle_featured', false)}
+                          title="Remove from Glimpses"
+                        >
+                          ✩ Unfeature
+                        </button>
+                        <button
+                          className={`${styles.cardBtn} ${styles.dangerBtn}`}
+                          onClick={() => handleAction(photo.id, 'delete')}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className={styles.divider} style={{ margin: '2rem 0', borderTop: '1px solid var(--border-color)' }} />
+
             {/* Private Section */}
             <div className={styles.albumSection}>
               <h2 className={styles.albumTitle}>
                 PRIVATE MEMORIES — {privatePhotos.length}
               </h2>
               {privatePhotos.length === 0 ? (
-                <p className={styles.emptyText}>No private photos yet. Click "+ ADD PHOTOS" above.</p>
+                <p className={styles.emptyText}>No private photos yet. Click &quot;+ ADD PHOTOS&quot; above.</p>
               ) : (
                 <div className={styles.photoGrid}>
                   {privatePhotos.map((photo, idx) => (
@@ -276,7 +362,7 @@ export function TripManageClient({ trip: initialTrip }: TripManageClientProps) {
                           className={styles.img}
                         />
                         {photo.is_featured && (
-                          <span className={styles.featuredBadge}>FEATURED</span>
+                          <span className={styles.featuredBadge}>★ FEATURED</span>
                         )}
                       </div>
                       <div className={styles.cardControls}>
@@ -311,7 +397,7 @@ export function TripManageClient({ trip: initialTrip }: TripManageClientProps) {
                           className={styles.cardBtn}
                           onClick={() => handleAction(photo.id, 'toggle_featured', !photo.is_featured)}
                         >
-                          {photo.is_featured ? 'Unfeature' : 'Feature'}
+                          {photo.is_featured ? '✩ Unfeature' : '★ Feature'}
                         </button>
                         <button
                           className={`${styles.cardBtn} ${styles.dangerBtn}`}
@@ -347,7 +433,7 @@ export function TripManageClient({ trip: initialTrip }: TripManageClientProps) {
                             className={styles.img}
                           />
                           {photo.is_featured && (
-                            <span className={styles.featuredBadge}>FEATURED</span>
+                            <span className={styles.featuredBadge}>★ FEATURED</span>
                           )}
                         </div>
                         <div className={styles.cardControls}>
@@ -382,7 +468,7 @@ export function TripManageClient({ trip: initialTrip }: TripManageClientProps) {
                             className={styles.cardBtn}
                             onClick={() => handleAction(photo.id, 'toggle_featured', !photo.is_featured)}
                           >
-                            {photo.is_featured ? 'Unfeature' : 'Feature'}
+                            {photo.is_featured ? '✩ Unfeature' : '★ Feature'}
                           </button>
                           <button
                             className={`${styles.cardBtn} ${styles.dangerBtn}`}
@@ -425,6 +511,8 @@ export function TripManageClient({ trip: initialTrip }: TripManageClientProps) {
               maxWidth: '500px',
               width: '100%',
               boxShadow: 'var(--shadow-lg)',
+              maxHeight: '90vh',
+              overflowY: 'auto',
             }}
             onClick={e => e.stopPropagation()}
           >
@@ -448,85 +536,60 @@ export function TripManageClient({ trip: initialTrip }: TripManageClientProps) {
 
             <form onSubmit={handleSaveTripEdit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
-                  Trip Name *
-                </label>
+                <label style={labelStyle}>Trip Name *</label>
                 <input
                   type="text"
                   required
                   value={editName}
                   onChange={e => setEditName(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.65rem 0.85rem',
-                    background: 'var(--bg-primary)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '4px',
-                    color: 'var(--text-primary)',
-                  }}
+                  style={inputStyle}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
-                  Journey Password
-                </label>
-                <input
-                  type="password"
-                  placeholder="Enter new password to change, or leave blank to keep current"
-                  value={editPassword}
-                  onChange={e => setEditPassword(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.65rem 0.85rem',
-                    background: 'var(--bg-primary)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '4px',
-                    color: 'var(--text-primary)',
-                  }}
-                />
+                <label style={labelStyle}>Journey Password</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showEditPassword ? 'text' : 'password'}
+                    placeholder="Enter new password to change, or leave blank to keep current"
+                    value={editPassword}
+                    onChange={e => setEditPassword(e.target.value)}
+                    style={{ ...inputStyle, paddingRight: '2.2rem' }}
+                  />
+                  <button
+                    type="button"
+                    title={showEditPassword ? 'Hide password' : 'Show password'}
+                    style={eyeBtn}
+                    onClick={() => setShowEditPassword(v => !v)}
+                    tabIndex={-1}
+                  >
+                    {showEditPassword ? '🙈' : '👁'}
+                  </button>
+                </div>
                 <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.25rem' }}>
-                  Leave blank to retain existing password protection setting.
+                  Leave blank to retain existing password protection. Min. 4 characters to change.
                 </span>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
-                  Date / Year
-                </label>
+                <label style={labelStyle}>Date / Year</label>
                 <input
                   type="text"
                   value={editDate}
                   onChange={e => setEditDate(e.target.value)}
                   placeholder="e.g. March 2026"
-                  style={{
-                    width: '100%',
-                    padding: '0.65rem 0.85rem',
-                    background: 'var(--bg-primary)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '4px',
-                    color: 'var(--text-primary)',
-                  }}
+                  style={inputStyle}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
-                  Description
-                </label>
+                <label style={labelStyle}>Description</label>
                 <input
                   type="text"
                   value={editDesc}
                   onChange={e => setEditDesc(e.target.value)}
                   placeholder="e.g. The Pink City & Amer Fort"
-                  style={{
-                    width: '100%',
-                    padding: '0.65rem 0.85rem',
-                    background: 'var(--bg-primary)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '4px',
-                    color: 'var(--text-primary)',
-                  }}
+                  style={inputStyle}
                 />
               </div>
 

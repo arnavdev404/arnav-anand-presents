@@ -46,8 +46,14 @@ export async function PATCH(
     if (body.trip_date !== undefined) payload.trip_date = body.trip_date ? String(body.trip_date).trim() : undefined;
     if (body.guest_enabled !== undefined) payload.guest_enabled = Boolean(body.guest_enabled);
     if (body.guest_access_type !== undefined) payload.guest_access_type = body.guest_access_type;
-    if (body.password !== undefined) payload.password = String(body.password);
-    if (body.guest_password !== undefined) payload.guest_password = String(body.guest_password);
+    // Only update password if a non-empty string is provided — blank = keep existing
+    if (body.password !== undefined && String(body.password).trim().length > 0) {
+      payload.password = String(body.password).trim();
+    }
+    // Only update guest_password if a non-empty string is provided — blank = keep existing
+    if (body.guest_password !== undefined && String(body.guest_password).trim().length > 0) {
+      payload.guest_password = String(body.guest_password).trim();
+    }
 
     const trip = await updateTrip(existingTrip.id, payload);
     return NextResponse.json({ trip, success: true });
