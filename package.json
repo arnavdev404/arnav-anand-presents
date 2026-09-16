@@ -12,6 +12,7 @@
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.116.0",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
     "cookies-next": "^6.1.1",
     "lucide-react": "^1.46.0",
     "next": "16.3.5",

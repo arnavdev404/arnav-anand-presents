@@ -1,21 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { uploadOriginal, uploadPreview } from '@/lib/storage';
+import { uploadPhotoToCloudinary } from '@/lib/storage';
 import { createAdminClient } from '@/lib/supabase/server';
 import { getTripBySlug } from '@/lib/trips';
 import { requireAdmin } from '@/lib/auth';
 
 const ALLOWED_TYPES = ['image/heic', 'image/heif', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 const MAX_SIZE = 100 * 1024 * 1024; // 100 MB
-
-async function generatePreview(buffer: Buffer): Promise<Buffer> {
-  const sharp = (await import('sharp')).default;
-  return sharp(buffer, { failOn: 'none' })
-    .rotate()
-    .resize({ width: 2000, withoutEnlargement: true })
-    .jpeg({ quality: 82, progressive: true })
-    .toBuffer();
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,24 +35,13 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const ts = Date.now();
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const ext = safeName.split('.').pop() || 'jpg';
-    const baseName = safeName.replace(`.${ext}`, '');
-    const originalFilename = `${ts}_${safeName}`;
-    const previewFilename = `${ts}_${baseName}.jpg`;
-
-    const originalPath = await uploadOriginal(slug, originalFilename, buffer, mimeType);
-
-    let previewBuffer: Buffer;
-    try {
-      previewBuffer = await generatePreview(buffer);
-    } catch (err) {
-      console.warn('Preview generation failed, using original:', err);
-      previewBuffer = buffer;
-    }
-
-    const previewPath = await uploadPreview(slug, previewFilename, previewBuffer);
+    // 2. Upload to Cloudinary server-side
+    const { publicId, secureUrl, bytes: assetBytes } = await uploadPhotoToCloudinary(
+      slug,
+      file.name,
+      buffer,
+      mimeType
+    );
 
     const adminClient = await createAdminClient();
     const { data: maxOrder } = await adminClient
@@ -75,14 +54,17 @@ export async function POST(request: NextRequest) {
 
     const nextOrder = (maxOrder?.sort_order ?? -1) + 1;
 
+    // 3. Save Cloudinary asset metadata into existing Supabase photos table
+    // original_path: Cloudinary public_id
+    // preview_path: Cloudinary secure_url
     const { data: photo, error } = await adminClient
       .from('photos')
       .insert({
         trip_id: trip.id,
-        original_path: originalPath,
-        preview_path: previewPath,
+        original_path: publicId,
+        preview_path: secureUrl,
         original_filename: file.name,
-        file_size: file.size,
+        file_size: assetBytes || file.size,
         is_guest: isGuest,
         sort_order: nextOrder,
         title: title || null,

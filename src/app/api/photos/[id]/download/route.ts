@@ -40,8 +40,8 @@ export async function GET(
       }
     }
 
-    // Short-lived signed URL for original (60 seconds)
-    const signedUrl = await generateSignedOriginalUrl(photo.original_path);
+    // Generate download URL for original asset
+    const signedUrl = await generateSignedOriginalUrl(photo.original_path, photo.original_filename);
     return NextResponse.json({
       downloadUrl: signedUrl,
       filename: photo.original_filename || `photo_${id}.jpg`,

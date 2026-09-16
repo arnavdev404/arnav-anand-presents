@@ -86,12 +86,13 @@ export async function DELETE(
         getPhotosByTrip(trip.id, true).catch(() => []),
       ]);
       const allPhotos = [...privatePhotos, ...guestPhotos];
-      await Promise.all(
-        allPhotos.flatMap(p => [
+      await Promise.all([
+        ...allPhotos.flatMap(p => [
           deleteOriginal(p.original_path).catch(() => {}),
           deletePreview(p.preview_path).catch(() => {}),
-        ])
-      );
+        ]),
+        trip.cover_image ? deleteOriginal(trip.cover_image).catch(() => {}) : Promise.resolve(),
+      ]);
     } catch (cleanupErr) {
       console.warn('Storage cleanup warning during trip delete:', cleanupErr);
     }
