@@ -1,0 +1,167 @@
+.wallContainer {
+  width: 100%;
+  padding: 2px;
+  background: var(--gallery-bg, #000000);
+}
+
+[data-theme="light"] .wallContainer {
+  background: var(--bg-primary, #FFE7E3);
+}
+
+/* CSS Multi-Column Masonry Grid */
+.masonryGrid {
+  column-count: 2;
+  column-gap: 2px;
+  width: 100%;
+}
+
+@media (min-width: 641px) and (max-width: 900px) {
+  .masonryGrid {
+    column-count: 3;
+    column-gap: 2px;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1280px) {
+  .masonryGrid {
+    column-count: 4;
+    column-gap: 2px;
+  }
+}
+
+@media (min-width: 1281px) and (max-width: 1600px) {
+  .masonryGrid {
+    column-count: 5;
+    column-gap: 3px;
+  }
+}
+
+@media (min-width: 1601px) {
+  .masonryGrid {
+    column-count: 6;
+    column-gap: 3px;
+  }
+}
+
+/* Individual Photo Tile - NO borders, NO cards, NO shadows */
+.photoTile {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 2px;
+  position: relative;
+  overflow: hidden;
+  background: rgba(128, 128, 128, 0.08);
+  cursor: pointer;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none;
+  display: block;
+  width: 100%;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (min-width: 1281px) {
+  .photoTile {
+    margin-bottom: 3px;
+  }
+}
+
+/* Natural Aspect Ratio Photo */
+.photoImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  vertical-align: middle;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+  will-change: transform;
+}
+
+.photoTile:hover .photoImg {
+  transform: scale(1.03);
+}
+
+.photoTile:focus-visible {
+  outline: 2px solid var(--accent-primary, #C0705A);
+  outline-offset: -2px;
+}
+
+/* Hover overlay for title & location */
+.tileOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.2) 40%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1rem 0.85rem;
+  pointer-events: none;
+}
+
+.photoTile:hover .tileOverlay {
+  opacity: 1;
+}
+
+.tileTitle {
+  font-family: var(--font-display, serif);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin: 0 0 0.2rem 0;
+  line-height: 1.25;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.tileMeta {
+  font-size: 0.6875rem;
+  color: rgba(225, 220, 201, 0.85);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Expand indicator icon in top right on hover */
+.expandIcon {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: all 0.25s ease;
+}
+
+.photoTile:hover .expandIcon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Touch screen adjustments */
+@media (hover: none) {
+  .tileOverlay {
+    display: none;
+  }
+  .photoTile:hover .photoImg {
+    transform: none;
+  }
+}

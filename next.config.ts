@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
       },
     ],
     formats: ['image/avif', 'image/webp'],  // serve WebP/AVIF instead of JPEG
+    qualities: [75, 80, 85, 90],
     minimumCacheTTL: 86400,                  // cache images 24h
     dangerouslyAllowSVG: false,
   },

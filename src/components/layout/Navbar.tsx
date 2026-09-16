@@ -21,9 +21,6 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
-  // Hide on admin pages
-  const isAdmin = pathname?.startsWith('/admin');
-
   // Scroll detection
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -53,7 +50,11 @@ export function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
-  if (isAdmin) return null;
+  // Hide on admin and gallery pages (gallery has its own dedicated top navigation)
+  const isAdmin = pathname?.startsWith('/admin');
+  const isGallery = pathname?.includes('/gallery');
+
+  if (isAdmin || isGallery) return null;
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (href === '/') {

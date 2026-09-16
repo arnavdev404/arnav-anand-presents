@@ -1,8 +1,17 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import styles from './Footer.module.css';
 
 export function Footer() {
+  const pathname = usePathname();
   const year = new Date().getFullYear();
+
+  // Hide on admin and gallery routes (gallery provides its own dedicated layout)
+  if (pathname?.startsWith('/admin') || pathname?.includes('/gallery')) {
+    return null;
+  }
   return (
     <footer className={styles.footer} role="contentinfo">
       <div className={styles.inner}>
