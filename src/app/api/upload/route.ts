@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { uploadOriginal, uploadPreview } from '@/lib/storage';
 import { createAdminClient } from '@/lib/supabase/server';
 import { getTripBySlug } from '@/lib/trips';
+import { requireAdmin } from '@/lib/auth';
 
 const ALLOWED_TYPES = ['image/heic', 'image/heif', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 const MAX_SIZE = 100 * 1024 * 1024; // 100 MB
@@ -18,8 +19,9 @@ async function generatePreview(buffer: Buffer): Promise<Buffer> {
 
 export async function POST(request: NextRequest) {
   try {
-    // Allow upload if valid trip exists
-    // (Checked further below after validating slug)
+    // 1. Enforce admin authorization server-side
+    const auth = await requireAdmin();
+    if (!auth.authorized) return auth.response;
 
     const formData = await request.formData();
     const slug = formData.get('slug') as string;

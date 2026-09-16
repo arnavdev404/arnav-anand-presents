@@ -14,7 +14,10 @@ export const metadata: Metadata = {
   keywords: ['travel', 'photography', 'memories', 'journeys', 'Arnav Anand'],
   authors: [{ name: 'Arnav Anand' }],
   creator: 'Arnav Anand',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  ),
   openGraph: {
     title: 'Arnav Anand Presents',
     description: 'A collection of moments, places & memories.',

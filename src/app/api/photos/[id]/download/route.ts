@@ -3,6 +3,7 @@ import { getPhotoById } from '@/lib/photos';
 import { verifyTripSession } from '@/lib/session';
 import { generateSignedOriginalUrl } from '@/lib/storage';
 import { getTripBySlug } from '@/lib/trips';
+import { verifyAdmin } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
@@ -19,13 +20,24 @@ export async function GET(
     if (!photo) return NextResponse.json({ error: 'Photo not found' }, { status: 404 });
 
     const trip = await getTripBySlug(slug);
-    if (!trip || trip.id !== photo.trip_id) return NextResponse.json({ error: 'Photo does not belong to this trip' }, { status: 403 });
+    if (!trip || trip.id !== photo.trip_id) {
+      return NextResponse.json({ error: 'Photo does not belong to this trip' }, { status: 403 });
+    }
 
-    // Verify session only if trip requires a password
-    if (trip.has_password) {
-      const accessType = photo.is_guest ? 'guest' : 'private';
-      const hasAccess = await verifyTripSession(slug, trip.id, accessType);
-      if (!hasAccess) return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    // Check if requester is admin
+    const adminCheck = await verifyAdmin();
+    if (!adminCheck.isAdmin) {
+      // Non-admin: verify journey session if trip is password protected
+      if (trip.has_password) {
+        const accessType = photo.is_guest ? 'guest' : 'private';
+        const hasAccess = await verifyTripSession(slug, trip.id, accessType);
+        if (!hasAccess) {
+          return NextResponse.json(
+            { error: 'Access denied: Journey authorization required' },
+            { status: 403 }
+          );
+        }
+      }
     }
 
     // Short-lived signed URL for original (60 seconds)

@@ -20,7 +20,9 @@ export function getLocalTrips(): Trip[] {
     cover_image: t.cover_image || null,
     guest_enabled: Boolean(t.guest_enabled),
     guest_access_type: t.guest_access_type || 'public',
-    has_password: Boolean(t.password && t.password.trim().length > 0),
+    has_password: Boolean(
+      t.has_password ?? (t.password_hash && t.password_hash !== 'NO_PASSWORD')
+    ),
     created_at: t.created_at || new Date().toISOString(),
     updated_at: t.updated_at || new Date().toISOString(),
     private_photo_count: (t.photos || []).filter((p: any) => !p.is_guest).length,
@@ -80,9 +82,12 @@ export async function getTripWithSecrets(slug: string): Promise<TripWithSecrets 
     return {
       ...localFound,
       id: localFound.id || localFound.slug,
-      password_hash: localFound.password && localFound.password.trim().length > 0 ? localFound.password : 'NO_PASSWORD',
+      password_hash: localFound.password_hash || (localFound.password && localFound.password.trim().length > 0 ? localFound.password : 'NO_PASSWORD'),
       guest_password_hash: null,
-      has_password: Boolean(localFound.password && localFound.password.trim().length > 0),
+      has_password: Boolean(
+        (localFound.password_hash && localFound.password_hash !== 'NO_PASSWORD') ||
+        (localFound.password && localFound.password.trim().length > 0)
+      ),
     } as TripWithSecrets;
   }
   try {
@@ -94,9 +99,12 @@ export async function getTripWithSecrets(slug: string): Promise<TripWithSecrets 
         return {
           ...localFound,
           id: localFound.id || localFound.slug,
-          password_hash: localFound.password && localFound.password.trim().length > 0 ? localFound.password : 'NO_PASSWORD',
+          password_hash: localFound.password_hash || (localFound.password && localFound.password.trim().length > 0 ? localFound.password : 'NO_PASSWORD'),
           guest_password_hash: null,
-          has_password: Boolean(localFound.password && localFound.password.trim().length > 0),
+          has_password: Boolean(
+            (localFound.password_hash && localFound.password_hash !== 'NO_PASSWORD') ||
+            (localFound.password && localFound.password.trim().length > 0)
+          ),
         } as TripWithSecrets;
       }
       return null;

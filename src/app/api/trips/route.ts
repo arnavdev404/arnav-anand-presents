@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllTrips, createTrip } from '@/lib/trips';
 import { uploadCoverImage } from '@/lib/storage';
+import { requireAdmin } from '@/lib/auth';
 import type { CreateTripPayload } from '@/types';
 
 const rateLimitMap = new Map<string, { count: number; reset: number }>();
@@ -24,9 +25,13 @@ export async function GET() {
   }
 }
 
-// POST /api/trips — create a new trip (supports directly from journey section or admin)
+// POST /api/trips — create a new trip (Admin only)
 export async function POST(request: NextRequest) {
   try {
+    // 1. Enforce admin authorization server-side
+    const auth = await requireAdmin();
+    if (!auth.authorized) return auth.response;
+
     const ip = request.headers.get('x-forwarded-for') || 'unknown';
     if (!checkRateLimit(ip)) return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 

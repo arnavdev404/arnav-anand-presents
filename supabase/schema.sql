@@ -1,5 +1,5 @@
 -- =============================================================
--- ARNAV ANAND PRESENTS — Supabase PostgreSQL Schema & Security
+-- ARNAV ANAND PRESENTS — Hardened Supabase Schema & Security
 -- =============================================================
 
 -- Enable uuid-ossp extension
@@ -59,19 +59,21 @@ CREATE INDEX IF NOT EXISTS idx_photos_is_featured ON public.photos(is_featured) 
 CREATE INDEX IF NOT EXISTS idx_access_sessions_token ON public.access_sessions(session_token);
 CREATE INDEX IF NOT EXISTS idx_access_sessions_expires ON public.access_sessions(expires_at);
 
--- Row Level Security (RLS)
+-- =============================================================
+-- ROW LEVEL SECURITY (RLS)
+-- =============================================================
+
 ALTER TABLE public.trips ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.photos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.access_sessions ENABLE ROW LEVEL SECURITY;
 
 -- TRIPS POLICIES:
--- Public can read non-secret fields of trips
-CREATE POLICY "Public trips view" 
-  ON public.trips FOR SELECT 
-  TO anon, authenticated
-  USING (true);
+-- Direct anon client SELECT is disabled to prevent leaking password_hash or trip secrets.
+-- Public visitor data is safely sanitized and served exclusively via server-side Next.js APIs.
+-- Authenticated admin users have full CRUD access:
+DROP POLICY IF EXISTS "Public trips view" ON public.trips;
+DROP POLICY IF EXISTS "Admin trips full access" ON public.trips;
 
--- Admin has full access to trips
 CREATE POLICY "Admin trips full access" 
   ON public.trips FOR ALL 
   TO authenticated 
@@ -79,8 +81,11 @@ CREATE POLICY "Admin trips full access"
   WITH CHECK (true);
 
 -- PHOTOS POLICIES:
--- Photos are protected: direct table select for anon is disabled so private photos cannot be scraped.
--- Server-side API with service role fetches photos and signs URLs upon successful authentication.
+-- Direct anon client SELECT/INSERT/UPDATE/DELETE is disabled.
+-- Protected photos are accessible ONLY through server-side authorization checks that issue signed URLs.
+-- Authenticated admin users have full CRUD access:
+DROP POLICY IF EXISTS "Admin photos full access" ON public.photos;
+
 CREATE POLICY "Admin photos full access" 
   ON public.photos FOR ALL 
   TO authenticated 
@@ -88,7 +93,10 @@ CREATE POLICY "Admin photos full access"
   WITH CHECK (true);
 
 -- ACCESS SESSIONS POLICIES:
--- Only managed server-side via service role
+-- Managed strictly server-side by Next.js using the service role client.
+-- No anon client may insert, update, or read access sessions directly.
+DROP POLICY IF EXISTS "Admin access_sessions full access" ON public.access_sessions;
+
 CREATE POLICY "Admin access_sessions full access" 
   ON public.access_sessions FOR ALL 
   TO authenticated 
@@ -96,8 +104,12 @@ CREATE POLICY "Admin access_sessions full access"
   WITH CHECK (true);
 
 -- =============================================================
--- STORAGE BUCKETS SETUP:
--- In your Supabase Dashboard -> Storage, create two private buckets:
--- 1. 'trip-originals' (Private)
--- 2. 'trip-previews' (Private)
+-- STORAGE BUCKETS (PRIVATE ONLY):
+-- In your Supabase Dashboard -> Storage, ensure two PRIVATE buckets exist:
+-- 1. 'trip-originals'  (Public bucket: OFF / PRIVATE)
+-- 2. 'trip-previews'   (Public bucket: OFF / PRIVATE)
+--
+-- All access is generated on-demand via short-lived signed URLs:
+-- - Previews: 3600s (1 hour)
+-- - Originals / Downloads: 60s
 -- =============================================================

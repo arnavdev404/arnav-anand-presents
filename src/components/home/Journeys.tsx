@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Journeys.module.css';
-import { UploadModal } from '@/components/shared/UploadModal';
 import type { Trip } from '@/types';
 
 interface JourneysProps {
@@ -13,20 +12,9 @@ interface JourneysProps {
 
 export function Journeys({ trips: initialTrips }: JourneysProps) {
   const [tripsList, setTripsList] = useState(initialTrips);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [activeUploadSlug, setActiveUploadSlug] = useState<string | null>(null);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
   // Track per-card image loaded state
   const [imgLoaded, setImgLoaded] = useState<Record<string, boolean>>({});
-
-  // New trip form state
-  const [tripName, setTripName] = useState('');
-  const [tripPassword, setTripPassword] = useState('');
-  const [tripDate, setTripDate] = useState('');
-  const [tripDesc, setTripDesc] = useState('');
-  const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [formError, setFormError] = useState('');
 
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -59,59 +47,6 @@ export function Journeys({ trips: initialTrips }: JourneysProps) {
     setTimeout(() => setCopiedSlug(null), 2000);
   };
 
-  const handleCreateTrip = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!tripName.trim() || submitting) return;
-
-    setSubmitting(true);
-    setFormError('');
-
-    try {
-      const formData = new FormData();
-      formData.append('name', tripName.trim());
-      if (tripPassword.trim()) {
-        formData.append('password', tripPassword.trim());
-      }
-      if (tripDate.trim()) formData.append('trip_date', tripDate.trim());
-      if (tripDesc.trim()) formData.append('description', tripDesc.trim());
-      if (coverFile) formData.append('cover_image', coverFile);
-
-      const res = await fetch('/api/trips', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to create journey');
-      }
-
-      // Prepend to trips list
-      const newTrip = {
-        ...data.trip,
-        private_photo_count: 0,
-        guest_photo_count: 0,
-        total_photo_count: 0,
-      };
-      setTripsList(prev => [newTrip, ...prev]);
-
-      // Reset form
-      setTripName('');
-      setTripPassword('');
-      setTripDate('');
-      setTripDesc('');
-      setCoverFile(null);
-      setShowCreateModal(false);
-
-      // Offer to upload photos to the newly created trip immediately
-      setActiveUploadSlug(newTrip.slug);
-    } catch (err: unknown) {
-      setFormError(err instanceof Error ? err.message : 'Failed to create journey');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   return (
     <section id="journeys" className={styles.section} aria-labelledby="journeys-title">
       <div className={styles.header}>
@@ -119,27 +54,11 @@ export function Journeys({ trips: initialTrips }: JourneysProps) {
           <p className={styles.eyebrow}>Travel Albums</p>
           <h2 id="journeys-title" className={styles.title}>My Journeys</h2>
         </div>
-
-        {/* Action to set up/add journey directly in this section */}
-        <button
-          className={styles.addJourneyBtn}
-          onClick={() => setShowCreateModal(true)}
-          aria-label="Add new travel journey"
-        >
-          <span className={styles.plusIcon}>+</span> Set New Journey
-        </button>
       </div>
 
       {tripsList.length === 0 ? (
         <div className={styles.empty}>
-          <p>No journeys yet. Create your first travel album!</p>
-          <button
-            className="btn btn-primary"
-            onClick={() => setShowCreateModal(true)}
-            style={{ marginTop: '1rem' }}
-          >
-            + Create First Journey
-          </button>
+          <p>No journeys published yet. Check back soon for new travel stories.</p>
         </div>
       ) : (
         <div ref={gridRef} className={styles.grid}>
@@ -264,14 +183,6 @@ export function Journeys({ trips: initialTrips }: JourneysProps) {
                     <button
                       type="button"
                       className={styles.quickActionBtn}
-                      onClick={() => setActiveUploadSlug(trip.slug)}
-                      title="Upload photos to this trip"
-                    >
-                      + Photos
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.quickActionBtn}
                       onClick={() => handleCopyLink(trip.slug)}
                       title="Copy trip share link"
                     >
@@ -283,133 +194,6 @@ export function Journeys({ trips: initialTrips }: JourneysProps) {
             </article>
           ))}
         </div>
-      )}
-
-      {/* CREATE JOURNEY MODAL */}
-      {showCreateModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
-          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h3 className={styles.modalTitle}>Set New Journey</h3>
-              <button
-                className={styles.modalCloseBtn}
-                onClick={() => setShowCreateModal(false)}
-                aria-label="Close"
-              >
-                ✕
-              </button>
-            </div>
-
-            {formError && (
-              <div className={styles.formError} role="alert">
-                {formError}
-              </div>
-            )}
-
-            <form onSubmit={handleCreateTrip} className={styles.createForm}>
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>
-                  Name the Trip *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Jaipur"
-                  value={tripName}
-                  onChange={e => setTripName(e.target.value)}
-                  className={styles.formInput}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>
-                  Password (or leave blank for no password)
-                </label>
-                <input
-                  type="password"
-                  placeholder="Pass or leave blank for open album"
-                  value={tripPassword}
-                  onChange={e => setTripPassword(e.target.value)}
-                  className={styles.formInput}
-                />
-                <span className={styles.formHint}>
-                  Leave blank if you want anyone to open and view the photos without entering a password.
-                </span>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Date / Year (optional)</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. May 2026"
-                    value={tripDate}
-                    onChange={e => setTripDate(e.target.value)}
-                    className={styles.formInput}
-                  />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Cover Photo (optional)</label>
-                  <input
-                    type="file"
-                    accept="image/*,.heic,.HEIC"
-                    onChange={e => setCoverFile(e.target.files?.[0] || null)}
-                    className={styles.fileInput}
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Description / Subtitle (optional)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. The Pink City & Amer Fort"
-                  value={tripDesc}
-                  onChange={e => setTripDesc(e.target.value)}
-                  className={styles.formInput}
-                />
-              </div>
-
-              <div className={styles.modalActions}>
-                <button
-                  type="button"
-                  className="btn btn-outline btn-sm"
-                  onClick={() => setShowCreateModal(false)}
-                  disabled={submitting}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary btn-sm"
-                  disabled={submitting || !tripName.trim()}
-                >
-                  {submitting ? 'Creating...' : 'Create Journey'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Upload Modal for any trip */}
-      {activeUploadSlug && (
-        <UploadModal
-          slug={activeUploadSlug}
-          isOpen={Boolean(activeUploadSlug)}
-          onClose={() => setActiveUploadSlug(null)}
-          onUploadComplete={() => {
-            // Update photo count locally
-            setTripsList(prev =>
-              prev.map(t =>
-                t.slug === activeUploadSlug
-                  ? { ...t, total_photo_count: (t.total_photo_count || 0) + 1 }
-                  : t
-              )
-            );
-          }}
-        />
       )}
     </section>
   );

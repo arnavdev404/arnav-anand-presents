@@ -43,18 +43,24 @@ export async function POST(
       return NextResponse.json({ success: true, noPassword: true });
     }
 
-    // Trip has password, verify it
+    // Trip has password, verify it using bcrypt
     if (!password || typeof password !== 'string') {
       return NextResponse.json({ error: 'Password required' }, { status: 400 });
     }
 
     let isValid = false;
-    if (hashToVerify === password.trim()) {
-      isValid = true;
-    } else {
-      isValid = await verifyPassword(password, hashToVerify!).catch(() => false);
+    try {
+      isValid = await verifyPassword(password.trim(), hashToVerify!);
+    } catch {
+      isValid = false;
     }
-    if (!isValid) return NextResponse.json({ success: false, error: 'Incorrect password. Please try again.' }, { status: 401 });
+
+    if (!isValid) {
+      return NextResponse.json(
+        { success: false, error: 'Incorrect password. Please try again.' },
+        { status: 401 }
+      );
+    }
 
     await createTripSession(trip.id, slug, access_type);
     return NextResponse.json({ success: true });

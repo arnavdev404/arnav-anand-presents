@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
 import styles from './AdminLogin.module.css';
 
 export default function AdminLoginPage() {
@@ -20,18 +19,22 @@ export default function AdminLoginPage() {
     setError('');
 
     try {
-      const supabase = createClient();
-      const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password }),
+      });
 
-      if (authError) {
-        setError('Invalid credentials. Please try again.');
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Invalid credentials. Please try again.');
         return;
       }
 
       router.push('/admin/dashboard');
       router.refresh();
     } catch {
-      setError('Login failed. Please try again.');
+      setError('Login failed. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
